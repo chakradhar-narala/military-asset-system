@@ -36,6 +36,7 @@ const Dashboard = ({ user }) => {
 
     useEffect(() => {
         fetchDashboard();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filterBase, filterDate, filterEquip]);
 
     if (!metrics) return <div className="loading">Initializing Strategic Intel...</div>;

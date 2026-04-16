@@ -39,6 +39,7 @@ const Purchases = () => {
 
     useEffect(() => {
         fetchHistory();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filterDate, filterEquip]);
 
     const handleSubmit = async (e) => {
