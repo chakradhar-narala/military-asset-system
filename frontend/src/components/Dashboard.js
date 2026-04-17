@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 
 const Dashboard = ({ user }) => {
     const [metrics, setMetrics] = useState(null);
@@ -11,10 +11,7 @@ const Dashboard = ({ user }) => {
 
     const fetchDashboard = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/dashboard?base=${filterBase}&date=${filterDate}&equipmentType=${filterEquip}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await api.get(`/api/dashboard?base=${filterBase}&date=${filterDate}&equipmentType=${filterEquip}`);
             setMetrics(res.data);
         } catch (err) {
             console.error("Dashboard fetch error:", err);
@@ -23,7 +20,7 @@ const Dashboard = ({ user }) => {
 
     const fetchBases = async () => {
         try {
-            const res = await axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/bases`);
+            const res = await api.get('/api/bases');
             setBases(res.data);
         } catch (err) {
             console.error("Bases fetch error:", err);

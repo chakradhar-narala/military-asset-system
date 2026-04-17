@@ -19,15 +19,12 @@ const logURI = dbURI.replace(/:([^:@]{1,})@/, ':****@');
 console.log(`[STRATEGIC INTEL] Targeting Database: ${logURI}`);
 
 mongoose.connect(dbURI)
-    .then(() => console.log('✓ SUCCESS: MongoDB Connected'))
+    .then(() => console.log('✓ SUCCESS: MongoDB Connected Successfully'))
     .catch(async (err) => {
-        console.error('⚠ CONNECTION REFUSED: The target database did not respond.');
-        console.log('Possible Causes:');
-        console.log(' 1. Your current IP is not whitelisted in MongoDB Atlas.');
-        console.log(' 2. Your network/DNS does not support SRV records (ECONNREFUSED).');
-        console.log(' 3. The credentials in .env are incorrect.');
+        console.error('⚠ CONNECTION ERROR: The target database did not respond.');
+        console.error(`Error Details: ${err.message}`);
         
-        if (dbURI.includes('mongodb+srv')) {
+        if (dbURI.includes('localhost') || !process.env.MONGO_URI) {
             console.log('\n[FALLBACK] Attempting connection to Local Sector Database...');
             try {
                 await mongoose.connect('mongodb://localhost:27017/military-assets');
@@ -35,6 +32,8 @@ mongoose.connect(dbURI)
             } catch (localErr) {
                 console.error('CRITICAL: Local Database also unreachable. Ensure MongoDB is running locally.');
             }
+        } else {
+            console.error('CRITICAL: Remote connection failed. Local fallback skipped in production-like environment.');
         }
     });
 

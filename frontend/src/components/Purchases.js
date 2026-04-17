@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 
 const Purchases = () => {
     const [bases, setBases] = useState([]);
@@ -13,7 +13,7 @@ const Purchases = () => {
 
     const fetchBases = async () => {
         try {
-            const res = await axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/bases`);
+            const res = await api.get('/api/bases');
             setBases(res.data);
             if (res.data.length > 0) setFormData(prev => ({ ...prev, baseId: res.data[0] }));
         } catch (err) {
@@ -23,10 +23,7 @@ const Purchases = () => {
 
     const fetchHistory = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/transactions?type=Purchase&date=${filterDate}&equipmentType=${filterEquip}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await api.get(`/api/transactions?type=Purchase&date=${filterDate}&equipmentType=${filterEquip}`);
             setHistory(res.data);
         } catch (err) {
             console.error("Failed to fetch history:", err);
@@ -45,10 +42,7 @@ const Purchases = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const token = localStorage.getItem('token');
-            await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/purchases`, formData, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.post('/api/purchases', formData);
             setMessage('PROCUREMENT SUCCESSFUL. ASSET ADDED TO STRATEGIC RESERVE.');
             setFormData({ ...formData, name: '', quantity: 1 });
             fetchHistory(); // Refresh history

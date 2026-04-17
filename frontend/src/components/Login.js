@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 
 const Login = ({ setAuth }) => {
     const [credentials, setCredentials] = useState({ username: '', password: '' });
@@ -8,7 +8,7 @@ const Login = ({ setAuth }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/auth/login`, credentials);
+            const res = await api.post('/api/auth/login', credentials);
             localStorage.setItem('token', res.data.token);
             setAuth(res.data.user);
         } catch (err) {

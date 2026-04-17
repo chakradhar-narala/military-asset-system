@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 
 const Transfers = () => {
     const [assets, setAssets] = useState([]);
@@ -12,11 +12,10 @@ const Transfers = () => {
 
     const fetchData = async () => {
         try {
-            const token = localStorage.getItem('token');
             const [assetsRes, basesRes, historyRes] = await Promise.all([
-                axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/purchases`, { headers: { Authorization: `Bearer ${token}` } }),
-                axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/bases`),
-                axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/transactions?type=Transfer Out`, { headers: { Authorization: `Bearer ${token}` } })
+                api.get('/api/purchases'),
+                api.get('/api/bases'),
+                api.get('/api/transactions?type=Transfer Out')
             ]);
             setAssets(assetsRes.data.filter(a => a.status === 'Available'));
             setBases(basesRes.data);
@@ -34,10 +33,7 @@ const Transfers = () => {
     const handleTransfer = async (e) => {
         e.preventDefault();
         try {
-            const token = localStorage.getItem('token');
-            await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/transfers`, { assetId: selectedAsset, toBase }, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.post('/api/transfers', { assetId: selectedAsset, toBase });
             setMessage('TRANSFER ORDERS CONFIRMED. DEPLOYMENT IN PROGRESS.');
             setSelectedAsset('');
             fetchData(); // Refresh history and assets

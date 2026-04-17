@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 
 const Assignments = () => {
     const [assets, setAssets] = useState([]);
@@ -11,10 +11,7 @@ const Assignments = () => {
     useEffect(() => {
         const fetchAssets = async () => {
             try {
-                const token = localStorage.getItem('token');
-                const res = await axios.get(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/purchases`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const res = await api.get('/api/purchases');
                 setAssets(res.data.filter(a => a.status === 'Available'));
             } catch (err) {
                 console.error("Failed to fetch assets:", err);
@@ -26,10 +23,7 @@ const Assignments = () => {
     const handleAssign = async (e) => {
         e.preventDefault();
         try {
-            const token = localStorage.getItem('token');
-            await axios.post(`${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/assignments`, { assetId: selectedAsset, type, assignedTo }, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.post('/api/assignments', { assetId: selectedAsset, type, assignedTo });
             setMessage(`TACTICAL ${type.toUpperCase()} LOGGED SUCCESSFULLY.`);
             setSelectedAsset('');
             setAssignedTo('');
