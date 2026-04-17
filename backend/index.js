@@ -11,10 +11,16 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 
+if (!process.env.JWT_SECRET) {
+    console.warn('⚠ CRITICAL WARNING: JWT_SECRET is not defined in environment variables. Authentication will fail.');
+}
+
 // Diagnostic Health Check
 app.get('/', (req, res) => {
+    const dbStatus = mongoose.connection.readyState === 1 ? "CONNECTED" : "DISCONNECTED";
     res.json({ 
         status: "STRATEGIC INTEL: ONLINE", 
+        database: dbStatus,
         message: "Military Asset Management API is operational.",
         timestamp: new Date().toISOString()
     });
