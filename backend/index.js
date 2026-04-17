@@ -11,6 +11,15 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 
+// Diagnostic Health Check
+app.get('/', (req, res) => {
+    res.json({ 
+        status: "STRATEGIC INTEL: ONLINE", 
+        message: "Military Asset Management API is operational.",
+        timestamp: new Date().toISOString()
+    });
+});
+
 // Database Connection Logic
 const dbURI = process.env.MONGO_URI || 'mongodb://localhost:27017/military-assets';
 
